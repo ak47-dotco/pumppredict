@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PumpPredict</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>🚀 Welcome to PumpPredict</h1>
+  <p>Predict the next big memecoin pump.</p>
+
+  <h2>🔥 Trending Predictions</h2>
+  <ul>
+    {% for trend in trending %}
+      <li><b>{{ trend.coin }}</b>: {{ trend.prediction }} ({{ trend.pool }})</li>
+    {% endfor %}
+  </ul>
+
+  <a href="/predict">Make a Prediction</a><br>
+  <a href="/dashboard">Dashboard</a><br>
+  <a href="/bets">My Bets</a><br>
+  <a href="/settings">Settings</a>
+</body>
+</html>
