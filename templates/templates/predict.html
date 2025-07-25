@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Make a Prediction</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>📈 Predict a Memecoin Pump</h1>
+
+  <form method="POST">
+    <label>Coin name:</label><br>
+    <input type="text" name="coin" required><br><br>
+
+    <label>Your prediction (e.g. Doge hits $1):</label><br>
+    <input type="text" name="prediction" required><br><br>
+
+    <label>Exit price/limit (optional):</label><br>
+    <input type="text" name="exit"><br><br>
+
+    <button type="submit">Submit Prediction</button>
+  </form>
+
+  <br><a href="/">← Back to Home</a>
+</body>
+</html>
