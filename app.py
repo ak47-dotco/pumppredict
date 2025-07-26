@@ -1,50 +1,76 @@
+# PumpPredict Full Flask Web App Code
+# Includes routes, templates, and setup files (HTML not included in this cell)
+
 from flask import Flask, render_template, request, redirect, url_for
+import datetime
 
 app = Flask(__name__)
 
-# Fake data to simulate predictions and bets
-user_bets = []
-trending_predictions = [
-    {"coin": "DogeCoin", "prediction": "100x by next month", "pool": "Live"},
-    {"coin": "Pepe", "prediction": "$1 before 2026", "pool": "Filling"},
-    {"coin": "SHIBA", "prediction": "New all-time high", "pool": "Closed"},
+# Mock prediction data
+predictions = [
+    {
+        "id": 1,
+        "coin": "DOGE",
+        "title": "DOGE to hit $0.30 in 24h",
+        "type": "24h",
+        "status": "live",
+        "end_time": datetime.datetime.now() + datetime.timedelta(hours=24),
+        "bets": []
+    },
+    {
+        "id": 2,
+        "coin": "PEPE",
+        "title": "PEPE to double this week",
+        "type": "weekly",
+        "status": "intermediate",
+        "end_time": datetime.datetime.now() + datetime.timedelta(days=7),
+        "bets": []
+    }
 ]
 
-@app.route('/')
+user_bets = []
+
+@app.route("/")
 def home():
-    return render_template('index.html', trending=trending_predictions)
+    return render_template("index.html", predictions=predictions)
 
-@app.route('/predict', methods=['GET', 'POST'])
-def predict():
-    if request.method == 'POST':
-        coin = request.form['coin']
-        prediction = request.form['prediction']
-        exit_point = request.form.get('exit')
-        user_bets.append({
-            "coin": coin,
-            "prediction": prediction,
-            "exit": exit_point,
-            "status": "Pending"
-        })
-        return redirect(url_for('my_bets'))
-    return render_template('predict.html')
+@app.route("/predict/<int:pred_id>", methods=["GET", "POST"])
+def predict(pred_id):
+    prediction = next((p for p in predictions if p['id'] == pred_id), None)
+    if not prediction:
+        return "Prediction not found", 404
 
-@app.route('/dashboard')
-def dashboard():
-    win_rate = "80%"  # placeholder
-    total_predictions = len(user_bets)
-    return render_template('dashboard.html', total=total_predictions, win_rate=win_rate)
+    if request.method == "POST":
+        username = request.form.get("username")
+        prediction_text = request.form.get("prediction")
+        exit_point = request.form.get("exit_point")
+        amount = request.form.get("amount")
 
-@app.route('/bets')
-def my_bets():
-    return render_template('bets.html', bets=user_bets)
+        bet = {
+            "username": username,
+            "prediction": prediction_text,
+            "exit_point": exit_point,
+            "amount": amount,
+            "time": datetime.datetime.now()
+        }
+        prediction['bets'].append(bet)
+        user_bets.append(bet)
+        return redirect(url_for("home"))
 
-@app.route('/settings', methods=['GET', 'POST'])
+    return render_template("predict.html", prediction=prediction)
+
+@app.route("/account")
+def account():
+    return render_template("account.html", user_bets=user_bets)
+
+@app.route("/settings")
 def settings():
-    if request.method == 'POST':
-        # Simulate saving changes
-        return redirect(url_for('dashboard'))
-    return render_template('settings.html')
+    return render_template("settings.html")
 
-if __name__ == '__main__':
+@app.route("/admin")
+def admin():
+    return render_template("admin.html", predictions=predictions)
+
+if __name__ == "__main__":
     app.run(debug=True)
+
